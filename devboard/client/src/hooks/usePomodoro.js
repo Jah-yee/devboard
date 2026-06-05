@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 
 const WORK_DURATION = 25 * 60; // 25 minutes
 const BREAK_DURATION = 5 * 60; // 5 minutes
+const LONG_BREAK_DURATION = 15 * 60; // 15 minutes
 
 export const usePomodoro = (onSessionComplete) => {
   const [timeLeft, setTimeLeft] = useState(WORK_DURATION);
@@ -18,11 +19,16 @@ export const usePomodoro = (onSessionComplete) => {
             clearInterval(intervalRef.current);
             setIsRunning(false);
             if (!isBreak) {
-              setSessionCount((s) => s + 1);
+              const nextCount = sessionCount + 1;
+              setSessionCount(nextCount);
               if (onSessionComplete) onSessionComplete();
+              setIsBreak(true);
+              const isLongBreak = nextCount % 4 === 0 && nextCount > 0;
+              return isLongBreak ? LONG_BREAK_DURATION : BREAK_DURATION;
+            } else {
+              setIsBreak(false);
+              return WORK_DURATION;
             }
-            setIsBreak((b) => !b);
-            return isBreak ? WORK_DURATION : BREAK_DURATION;
           }
           return prev - 1;
         });
@@ -31,13 +37,14 @@ export const usePomodoro = (onSessionComplete) => {
       clearInterval(intervalRef.current);
     }
     return () => clearInterval(intervalRef.current);
-  }, [isRunning, isBreak]);
+  }, [isRunning, isBreak, sessionCount, onSessionComplete]);
 
   const toggle = () => setIsRunning((r) => !r);
 
   const reset = () => {
     setIsRunning(false);
     setIsBreak(false);
+    setSessionCount(0);
     setTimeLeft(WORK_DURATION);
   };
 
@@ -47,8 +54,10 @@ export const usePomodoro = (onSessionComplete) => {
     return `${m}:${s}`;
   };
 
+  const currentBreakDuration = (sessionCount % 4 === 0 && sessionCount > 0) ? LONG_BREAK_DURATION : BREAK_DURATION;
+
   const progress = isBreak
-    ? ((BREAK_DURATION - timeLeft) / BREAK_DURATION) * 100
+    ? ((currentBreakDuration - timeLeft) / currentBreakDuration) * 100
     : ((WORK_DURATION - timeLeft) / WORK_DURATION) * 100;
 
   return { timeLeft, isRunning, isBreak, sessionCount, toggle, reset, format, progress };
