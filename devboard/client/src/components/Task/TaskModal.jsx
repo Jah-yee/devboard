@@ -1,6 +1,12 @@
 import React, { useState } from "react";
 
-const TaskModal = ({ task, mode = "create", defaultStatus = "backlog", onClose, onSave }) => {
+const TaskModal = ({
+  task,
+  mode = "create",
+  defaultStatus = "backlog",
+  onClose,
+  onSave,
+}) => {
   const [form, setForm] = useState({
     title: task?.title || "",
     description: task?.description || "",
@@ -9,6 +15,7 @@ const TaskModal = ({ task, mode = "create", defaultStatus = "backlog", onClose, 
     tags: task?.tags?.join(", ") || "",
     githubIssueUrl: task?.githubIssueUrl || "",
     githubIssueNumber: task?.githubIssueNumber || "",
+    dueDate: task?.dueDate || "",
   });
   const [snippetCode, setSnippetCode] = useState("");
   const [snippetLang, setSnippetLang] = useState("javascript");
@@ -19,9 +26,16 @@ const TaskModal = ({ task, mode = "create", defaultStatus = "backlog", onClose, 
     setLoading(true);
     const payload = {
       ...form,
-      tags: form.tags.split(",").map((t) => t.trim()).filter(Boolean),
-      githubIssueNumber: form.githubIssueNumber ? Number(form.githubIssueNumber) : undefined,
-      ...(snippetCode ? { snippets: [{ language: snippetLang, code: snippetCode }] } : {}),
+      tags: form.tags
+        .split(",")
+        .map((t) => t.trim())
+        .filter(Boolean),
+      githubIssueNumber: form.githubIssueNumber
+        ? Number(form.githubIssueNumber)
+        : undefined,
+      ...(snippetCode
+        ? { snippets: [{ language: snippetLang, code: snippetCode }] }
+        : {}),
     };
     await onSave(payload);
     setLoading(false);
@@ -34,7 +48,12 @@ const TaskModal = ({ task, mode = "create", defaultStatus = "backlog", onClose, 
           <h2 className="font-semibold text-[#f0f0f0]">
             {mode === "create" ? "New Task" : "Edit Task"}
           </h2>
-          <button onClick={onClose} className="text-[#666] hover:text-[#aaa] text-xl">✕</button>
+          <button
+            onClick={onClose}
+            className="text-[#666] hover:text-[#aaa] text-xl"
+          >
+            ✕
+          </button>
         </div>
 
         <div className="p-5 flex flex-col gap-3 max-h-[70vh] overflow-y-auto">
@@ -90,14 +109,18 @@ const TaskModal = ({ task, mode = "create", defaultStatus = "backlog", onClose, 
               type="text"
               placeholder="GitHub Issue URL"
               value={form.githubIssueUrl}
-              onChange={(e) => setForm({ ...form, githubIssueUrl: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, githubIssueUrl: e.target.value })
+              }
               className="flex-1 bg-[#0f0f10] border border-[#2a2a2f] rounded-lg px-3 py-2 text-sm text-[#f0f0f0] placeholder-[#555] focus:outline-none focus:border-purple-500"
             />
             <input
               type="number"
               placeholder="#"
               value={form.githubIssueNumber}
-              onChange={(e) => setForm({ ...form, githubIssueNumber: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, githubIssueNumber: e.target.value })
+              }
               className="w-16 bg-[#0f0f10] border border-[#2a2a2f] rounded-lg px-3 py-2 text-sm text-[#f0f0f0] placeholder-[#555] focus:outline-none focus:border-purple-500"
             />
           </div>
@@ -111,8 +134,19 @@ const TaskModal = ({ task, mode = "create", defaultStatus = "backlog", onClose, 
                 onChange={(e) => setSnippetLang(e.target.value)}
                 className="bg-[#1a1a1f] border border-[#2a2a2f] rounded text-xs text-[#888] px-2 py-1 focus:outline-none"
               >
-                {["javascript", "typescript", "python", "bash", "sql", "json", "css", "html"].map((l) => (
-                  <option key={l} value={l}>{l}</option>
+                {[
+                  "javascript",
+                  "typescript",
+                  "python",
+                  "bash",
+                  "sql",
+                  "json",
+                  "css",
+                  "html",
+                ].map((l) => (
+                  <option key={l} value={l}>
+                    {l}
+                  </option>
                 ))}
               </select>
             </div>
@@ -124,10 +158,19 @@ const TaskModal = ({ task, mode = "create", defaultStatus = "backlog", onClose, 
               className="w-full bg-[#0f0f10] px-3 py-2 text-xs font-mono text-[#a0a0a0] placeholder-[#444] focus:outline-none resize-none"
             />
           </div>
+          <input
+            type="date"
+            value={form.dueDate}
+            onChange={(e) => setForm({ ...form, dueDate: e.target.value })}
+            className="w-full bg-[#0f0f10] border border-[#2a2a2f] rounded-lg px-3 py-2 text-sm text-[#f0f0f0] focus:outline-none focus:border-purple-500"
+          />
         </div>
 
         <div className="flex justify-end gap-2 px-5 py-4 border-t border-[#2a2a2f]">
-          <button onClick={onClose} className="px-4 py-2 text-sm text-[#888] hover:text-[#aaa] transition">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 text-sm text-[#888] hover:text-[#aaa] transition"
+          >
             Cancel
           </button>
           <button
@@ -135,7 +178,11 @@ const TaskModal = ({ task, mode = "create", defaultStatus = "backlog", onClose, 
             disabled={loading || !form.title.trim()}
             className="px-5 py-2 text-sm bg-purple-600 hover:bg-purple-500 text-white rounded-lg font-medium transition disabled:opacity-40"
           >
-            {loading ? "Saving..." : mode === "create" ? "Create Task" : "Save Changes"}
+            {loading
+              ? "Saving..."
+              : mode === "create"
+                ? "Create Task"
+                : "Save Changes"}
           </button>
         </div>
       </div>
