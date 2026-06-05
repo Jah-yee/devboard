@@ -4,9 +4,22 @@ import PomodoroTimer from "../components/Pomodoro/PomodoroTimer";
 import TaskModal from "../components/Task/TaskModal";
 import { useBoard } from "../context/BoardContext";
 
+const LoadingSpinner = () => (
+  <div className="flex items-center justify-center h-screen bg-[#0f0f10]">
+    <div className="flex flex-col items-center gap-4">
+      <div className="w-12 h-12 border-4 border-purple-600 border-t-transparent rounded-full animate-spin"></div>
+      <span className="text-[#a0a0a5] text-sm font-medium animate-pulse">Loading workspace...</span>
+    </div>
+  </div>
+);
+
 const Dashboard = () => {
-  const { user, logout, updateTask } = useBoard();
+  const { user, logout, updateTask, loading } = useBoard();
   const [selectedTask, setSelectedTask] = useState(null);
+
+  if (loading) {
+    return <LoadingSpinner />;
+  }
 
   const handleSessionComplete = async () => {
     if (selectedTask) {
