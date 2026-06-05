@@ -11,6 +11,7 @@ const PRIORITY_COLORS = {
 
 const TaskCard = ({ task, index, onSelect }) => {
   const [expanded, setExpanded] = useState(false);
+  const [selectedSnippet, setSelectedSnippet] = useState(0);
 
   // Check if the task due date has passed and the task is not completed ---------
   const today = new Date();
@@ -61,9 +62,25 @@ const TaskCard = ({ task, index, onSelect }) => {
                 {"</>"} {task.snippets.length} snippet
                 {task.snippets.length > 1 ? "s" : ""} {expanded ? "▲" : "▼"}
               </button>
+              <div className="flex gap-1 mb-2">
+                {task.snippets.map((snippet, index) => (
+                  <button
+                    key={index}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedSnippet(index);
+                    }}
+                    className="text-[10px] px-2 py-1 rounded bg-[#2a2a2f]"
+                  >
+                    Snippet {index + 1}
+                  </button>
+                ))}
+              </div>
               {expanded && (
                 <SyntaxHighlighter
-                  language={task.snippets[0].language || "javascript"}
+                  language={
+                    task.snippets[selectedSnippet].language || "javascript"
+                  }
                   style={vscDarkPlus}
                   customStyle={{
                     fontSize: 10,
@@ -72,7 +89,7 @@ const TaskCard = ({ task, index, onSelect }) => {
                     padding: "8px 10px",
                   }}
                 >
-                  {task.snippets[0].code}
+                  {task.snippets[selectedSnippet].code}
                 </SyntaxHighlighter>
               )}
             </div>
@@ -97,6 +114,7 @@ const TaskCard = ({ task, index, onSelect }) => {
             ))}
           </div>
 
+          {/* Due date */}
           {task.dueDate && (
             <div
               className={`mt-2 text-[10px] ${
