@@ -1,0 +1,97 @@
+import React, { useState } from "react";
+import { Draggable } from "@hello-pangea/dnd";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
+
+const PRIORITY_COLORS = {
+  high: "bg-red-500/20 text-red-400",
+  medium: "bg-yellow-500/20 text-yellow-400",
+  low: "bg-green-500/20 text-green-400",
+};
+
+const TaskCard = ({ task, index, onSelect }) => {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <Draggable draggableId={task._id} index={index}>
+      {(provided, snapshot) => (
+        <div
+          ref={provided.innerRef}
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
+          onClick={() => onSelect(task)}
+          className={`bg-[#1a1a1f] border rounded-lg p-3 cursor-pointer transition-all
+            ${snapshot.isDragging ? "border-purple-500 shadow-lg shadow-purple-500/10" : "border-[#2a2a2f] hover:border-[#444]"}`}
+        >
+          {/* Title */}
+          <p className="text-sm font-medium text-[#f0f0f0] leading-snug mb-2">
+            {task.title}
+          </p>
+
+          {/* GitHub issue link */}
+          {task.githubIssueUrl && (
+            <a
+              href={task.githubIssueUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="flex items-center gap-1 text-[10px] text-[#666] hover:text-purple-400 mb-2"
+            >
+              <span>🔗</span> #{task.githubIssueNumber} GitHub Issue
+            </a>
+          )}
+
+          {/* Code snippets preview */}
+          {task.snippets?.length > 0 && (
+            <div className="mb-2">
+              <button
+                onClick={(e) => { e.stopPropagation(); setExpanded((v) => !v); }}
+                className="text-[10px] text-purple-400 hover:text-purple-300 mb-1"
+              >
+                {"</>"} {task.snippets.length} snippet{task.snippets.length > 1 ? "s" : ""} {expanded ? "▲" : "▼"}
+              </button>
+              {expanded && (
+                <SyntaxHighlighter
+                  language={task.snippets[0].language || "javascript"}
+                  style={vscDarkPlus}
+                  customStyle={{ fontSize: 10, borderRadius: 6, margin: 0, padding: "8px 10px" }}
+                >
+                  {task.snippets[0].code}
+                </SyntaxHighlighter>
+              )}
+            </div>
+          )}
+
+          {/* Tags + Priority */}
+          <div className="flex flex-wrap gap-1 mt-1">
+            {task.priority && (
+              <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${PRIORITY_COLORS[task.priority]}`}>
+                {task.priority}
+              </span>
+            )}
+            {task.tags?.map((tag) => (
+              <span key={tag} className="text-[10px] px-1.5 py-0.5 rounded bg-[#2a2a2f] text-[#888]">
+                {tag}
+              </span>
+            ))}
+          </div>
+
+          {/* Footer */}
+          <div className="flex items-center justify-between mt-2">
+            <div className="flex items-center gap-2 text-[#555] text-[10px]">
+              {task.pomodoroCount > 0 && <span>🍅 ×{task.pomodoroCount}</span>}
+              {task.snippets?.length > 0 && <span>📎 {task.snippets.length}</span>}
+            </div>
+            {task.assignee?.name && (
+              <div className="w-5 h-5 rounded-full bg-purple-700 flex items-center justify-center text-[9px] font-bold text-white">
+                {task.assignee.name[0].toUpperCase()}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </Draggable>
+  );
+};
+
+export default TaskCard;
