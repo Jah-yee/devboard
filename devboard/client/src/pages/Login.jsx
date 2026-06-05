@@ -1,9 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useBoard } from "../context/BoardContext";
 
 const Login = () => {
+  
   const { login } = useBoard();
+  useEffect(() => {
+  document.title = "Login — DevBoard";
+}, []);
   const [isRegister, setIsRegister] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", password: "" });
   const [error, setError] = useState("");

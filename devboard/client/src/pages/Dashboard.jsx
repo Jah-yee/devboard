@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import KanbanBoard from "../components/Board/KanbanBoard";
 import PomodoroTimer from "../components/Pomodoro/PomodoroTimer";
 import TaskModal from "../components/Task/TaskModal";
@@ -15,6 +15,9 @@ const LoadingSpinner = () => (
 
 const Dashboard = () => {
   const { user, logout, updateTask, loading } = useBoard();
+    useEffect(() => {
+    document.title = "Dashboard — DevBoard";
+  }, []);
   const [selectedTask, setSelectedTask] = useState(null);
 
   if (loading) {
