@@ -12,13 +12,29 @@ const KanbanBoard = ({ onSelectTask }) => {
   const [defaultStatus, setDefaultStatus] = useState("backlog");
 
   const getTasksByStatus = (status) =>
-    tasks.filter((t) => t.status === status);
+    tasks
+      .filter((t) => t.status === status)
+      .sort((a, b) => a.order - b.order);
 
   const onDragEnd = async (result) => {
-    const { destination, source, draggableId } = result;
+    const { destination, source } = result;
+
     if (!destination) return;
-    if (destination.droppableId === source.droppableId && destination.index === source.index) return;
-    await updateTask(draggableId, { status: destination.droppableId });
+
+    const colTasks = getTasksByStatus(destination.droppableId);
+    const reordered = Array.from(colTasks);
+
+    const [moved] = reordered.splice(source.index, 1);
+    reordered.splice(destination.index, 0, moved);
+
+    await Promise.all(
+      reordered.map((task, index) =>
+        updateTask(task._id, {
+          status: destination.droppableId,
+          order: index,
+        })
+      )
+    );
   };
 
   const handleAddTask = (columnId) => {
