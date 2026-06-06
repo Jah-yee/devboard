@@ -12,6 +12,7 @@ const Login = () => {
   const [form, setForm] = useState({ name: "", email: "", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [show, setShow] = useState(false);
 
   const handleSubmit = async () => {
     setError("");
@@ -54,14 +55,27 @@ const Login = () => {
             onChange={(e) => setForm({ ...form, email: e.target.value })}
             className="w-full bg-[#0f0f10] border border-[#2a2a2f] rounded-lg px-3 py-2.5 text-sm text-[#f0f0f0] placeholder-[#555] focus:outline-none focus:border-purple-500"
           />
-          <input
-            type="password"
-            placeholder="Password"
-            value={form.password}
-            onChange={(e) => setForm({ ...form, password: e.target.value })}
-            onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-            className="w-full bg-[#0f0f10] border border-[#2a2a2f] rounded-lg px-3 py-2.5 text-sm text-[#f0f0f0] placeholder-[#555] focus:outline-none focus:border-purple-500"
-          />
+          <div className="relative">
+            <input
+              type={show ? "text" : "password"}
+              placeholder="Password"
+              value={form.password}
+              onChange={(e) =>
+                setForm({ ...form, password: e.target.value })
+              }
+              onKeyDown={(e) =>
+                e.key === "Enter" && handleSubmit()
+              }
+              className="w-full bg-[#0f0f10] border border-[#2a2a2f] rounded-lg px-3 py-2.5 pr-10 text-sm text-[#f0f0f0] placeholder-[#555] focus:outline-none focus:border-purple-500"
+            />
+            <button
+              type="button"
+              onClick={() => setShow((prev) => !prev)}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-[#777] hover:text-[#ccc]"
+            >
+              👁️
+            </button>
+          </div>
 
           {error && <p className="text-red-400 text-xs">{error}</p>}
 
