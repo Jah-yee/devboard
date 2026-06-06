@@ -15,6 +15,10 @@
 - 🔐 **Auth** — Register/login with JWT
 - 🌙 **Dark Mode UI** — Easy on the eyes
 
+
+<img width="893" height="608" alt="image" src="https://github.com/user-attachments/assets/93df3b3b-6e07-48a6-8939-7ba67aeece25" />
+
+
 ## 🛠️ Tech Stack
 
 | Layer     | Tech                        |
